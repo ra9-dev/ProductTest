@@ -1,6 +1,7 @@
-var mongoose = require('mongoose');
-	User = mongoose.model('users');
-	jwt = require('jsonwebtoken');
+var mongoose = require('mongoose'),
+	User = mongoose.model('users'),
+	jwt = require('jsonwebtoken'),
+	crypto = require('crypto'),
 	config = require('../config');
 
 exports.getAllUsers = function(req, res) {
@@ -20,8 +21,13 @@ exports.authenticate = async function(req, res) {
 					throw('There is some problem. Contact developer.');
 				else if(!user)
 					throw('Invalid UserName.');
-				else if(req.body.password != user.password)
+				else if(user.password != hashPassword(req.body.password)) {
+					console.log(user.password);
+					var test = hashPassword(req.body.password);
+					console.log(test);
+					console.log(test == user.password);
 					throw('Wrong password.');
+				}
 				else
 					userObj = user;
 			} catch(err) {
@@ -39,6 +45,25 @@ exports.authenticate = async function(req, res) {
 			message: 'Use this API token for authentication'
 		});
 	}
+}
+
+exports.register = function(req, res) {
+	var userObj = new User({
+		username: req.body.username,
+		email: req.body.email,
+		password: hashPassword(req.body.password)
+	});
+	userObj.save(function(err){
+		if(err) {
+			res.json({
+				success: false,
+				message: err
+			});
+		}
+		else {
+			res.json({ success: true });
+		}
+	});
 }
 
 exports.getUser = function(req, res) {
@@ -71,12 +96,19 @@ exports.verifyToken = function(req, res, next) {
 	}
 }
 
+var hashPassword = function(password) {
+	var hash = crypto.createHmac('sha512', config.salt); /** Hashing algorithm sha512 */
+	hash.update(password);
+	var value = hash.digest('hex');
+	return value;
+};
+
 var generateToken = function(username) {
 	const payload = {
 		username: username
 	};
 	var token = jwt.sign(payload, config.key, {
-		expiresIn: '1440m'
+		expiresIn: '1h'
 	});
 	return token;
 }
