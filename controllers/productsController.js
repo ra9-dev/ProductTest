@@ -69,9 +69,79 @@ exports.searchTags = function(req, res) {
 	});
 }
 
+exports.getOne = function(req, res) {
+	Product.findOne({code: req.params.code}, function(err, product) {
+		if(err) {
+			res.json({
+				success: false,
+				message: 'No matching product.'
+			});
+		}
+		else {
+			res.json({
+				success: true,
+				products: product
+			});
+		}
+	});
+}
+
+exports.update = function(req, res) {
+	Product.findOne({code: req.params.code}, async function(err, productData) {
+		if(err || !productData) {
+			res.json({
+				success: false,
+				message: 'No matching product.'
+			});
+		}
+		else {
+			req.body.tags = await getUpdatedTags(productData, req.body);
+			Product.findOneAndUpdate({code: req.params.code}, {$set: req.body}, {new: true}, function (err, updatedProduct) {
+				if(err) {
+					res.json({
+						success: false,
+						message: 'Something happened, cant update. Please check the error.',
+						error: err
+					});
+				}
+				else {
+					res.json({
+						success: true,
+						message: 'Product updated.',
+						products: updatedProduct
+					});
+				}
+			});
+		}
+	});
+}
+
+exports.delete = function(req, res) {
+	Product.findOneAndRemove({code: req.params.code}, function(err, product) {
+		if(err) {
+			res.json({
+				success: false,
+				message: err
+			});
+		}
+		else if(product) {
+			res.json({
+				success: true,
+				message: 'Product with code: ' + req.params.code + ' deleted.'
+			});
+		}
+		else {
+			res.json({
+				success: false,
+				message: 'No matching product.'
+			})
+		}
+	});
+}
+
 var addProductToMongo = async function(productData) {
 	try {
-		if(!productData.sku || !productData.name || !productData.price) {
+		if(!productData.sku || !productData.name || !productData.price || !productData.attributes || Object.keys(productData.attributes) <= 0) {
 			return {
 				success: false,
 				message: 'You missed some required fields. Please refer the doc for main info.'
@@ -80,12 +150,7 @@ var addProductToMongo = async function(productData) {
 		else {
 			if(!productData.category)
 				productData.category = 'Others';
-			var tags = [productData.name, productData.category];
-			if(productData.tags)
-				tags = tags.concat(productData.tags, Object.values(productData.attributes));
-			else
-				tags = tags.concat(Object.values(productData.attributes));
-			tags = await convertArrayToLowerCase(tags);
+			var tags = await getUpdatedTags(productData);
 			var newProduct = new Product({
 				sku: productData.sku,
 				name: productData.name,
@@ -118,6 +183,26 @@ var addProductToMongo = async function(productData) {
 			error: err
 		}
 	}
+}
+
+var getUpdatedTags = async function(productData, newData=null) {
+	var customTags = [];
+	if(newData) {
+		//update productData to newData for updating tags
+		for (var key in newData)
+			productData.key = newData.key;
+		customTags = newData.tags || '';
+	}
+	else
+		//if its a new document custom tags will be fetched from productData
+		customTags = productData.tags;
+	var tags = [productData.name, productData.category];
+	if(customTags)
+		tags = tags.concat(customTags, Object.values(productData.attributes));
+	else
+		tags = tags.concat(Object.values(productData.attributes));
+	tags = await convertArrayToLowerCase(tags);
+	return tags;
 }
 
 var convertArrayToLowerCase = function(tagArray) {

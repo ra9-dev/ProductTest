@@ -102,7 +102,7 @@ var generateToken = function(username) {
 		username: username
 	};
 	var token = jwt.sign(payload, config.key, {
-		expiresIn: '1h'
+		expiresIn: config.tokenExpiryTime
 	});
 	return token;
 }

@@ -29,4 +29,8 @@ module.exports = function(app) {
 		.post(products.addInBulk);
 	app.route('/products/search/:tags')
 		.get(products.searchTags);
+	app.route('/products/:code')
+		.get(products.getOne)
+		.put(products.update)
+		.delete(products.delete);
 }
