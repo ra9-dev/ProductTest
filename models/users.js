@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+	Schema = mongoose.Schema;
 
 //model for mongoDb collection with name of 'users' for maintaining user info. For now it will have fields name, email, password.
 module.exports = mongoose.model('users', new Schema({
@@ -21,5 +21,6 @@ module.exports = mongoose.model('users', new Schema({
 	}
 }, {
 	runSettersOnQuery: true,
-	timestamps: true
+	timestamps: true,
+	strict: false
 }));

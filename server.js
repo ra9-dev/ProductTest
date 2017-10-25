@@ -6,6 +6,7 @@ var express = require('express'),
 	mongoose = require('mongoose'),
 	config = require('./config');
 	Users = require('./models/users'),
+	Products = require('./models/products'),
 	port = process.env.PORT || 3000;
 //connecting to mongoDB
 mongoose.Promise = global.Promise;

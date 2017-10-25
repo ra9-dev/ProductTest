@@ -18,7 +18,7 @@ exports.authenticate = async function(req, res) {
 		}, function(err, user) {
 			try {
 				if(err)
-					throw('There is some problem. Contact developer.');
+					throw('There is some problem. Refer the doc provided.');
 				else if(!user)
 					throw('Invalid UserName.');
 				else if(user.password != hashPassword(req.body.password)) {
@@ -42,7 +42,7 @@ exports.authenticate = async function(req, res) {
 		res.json({
 			success: true,
 			token: token,
-			message: 'Use this API token for authentication'
+			message: 'Use this API token for authentication as described in provided doc.'
 		});
 	}
 }
@@ -64,12 +64,6 @@ exports.register = function(req, res) {
 			res.json({ success: true });
 		}
 	});
-}
-
-exports.getUser = function(req, res) {
-	console.log('reached here in get user');
-	console.log(req.params.id);
-	res.send("completed");
 }
 
 exports.verifyToken = function(req, res, next) {

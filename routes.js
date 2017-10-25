@@ -7,7 +7,7 @@ module.exports = function(app) {
 		});
 	
 	//route to add dummy user. will work only once
-	var dummy = require('./controllers/dummyUser');
+	var dummy = require('./controllers/initSetup');
 	app.route('/dummy-setup')
 		.get(dummy.create);
 	//route to perform action on users collection
@@ -20,4 +20,13 @@ module.exports = function(app) {
 	//user api to signup
 	app.route('/signup')
 		.post(user.register);
+	//products CRUD operations RESTful APIs
+	var products = require('./controllers/productsController')
+	app.route('/products')
+		.post(products.addNew)
+		.get(products.getAll);
+	app.route('/products/bulk')
+		.post(products.addInBulk);
+	app.route('/products/search/:tags')
+		.get(products.searchTags);
 }
