@@ -2,6 +2,9 @@
   "name": "producttest",
   "version": "1.0.0",
   "description": "RESTful API for add/edit/del/search products in db",
+  "engines": {
+    "node": "8.7.0"
+  },
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
