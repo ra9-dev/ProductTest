@@ -5,8 +5,7 @@ var mongoose = require('mongoose'),
 var productsSchema = new Schema({
 	sku: {
 		type: String,
-		required: true,
-		unique: true
+		required: true
 	},
 	code: String,
 	name: {

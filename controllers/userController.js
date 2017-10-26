@@ -62,7 +62,7 @@ exports.register = function(req, res) {
 }
 
 exports.verifyToken = function(req, res, next) {
-	var token = req.body.token || req.query.token || req.headers['x-access-token'];
+	var token = req.query.token || req.headers['x-access-token'];
 	if(token) {
 		jwt.verify(token, config.key, function(err, userDetails) {
 			if(err) {
