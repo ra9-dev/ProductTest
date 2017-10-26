@@ -3,7 +3,7 @@ module.exports = function(app) {
 	//entry route
 	app.route('/')
 		.get(function(req, res){
-			res.json({ message: 'main page'});
+			res.json({ message: 'Welcome to the app.'});
 		});
 	
 	//route to add dummy user. will work only once
