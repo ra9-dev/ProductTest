@@ -21,13 +21,8 @@ exports.authenticate = async function(req, res) {
 					throw('There is some problem. Refer the doc provided.');
 				else if(!user)
 					throw('Invalid UserName.');
-				else if(user.password != hashPassword(req.body.password)) {
-					console.log(user.password);
-					var test = hashPassword(req.body.password);
-					console.log(test);
-					console.log(test == user.password);
+				else if(user.password != hashPassword(req.body.password))
 					throw('Wrong password.');
-				}
 				else
 					userObj = user;
 			} catch(err) {
